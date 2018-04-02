@@ -77,7 +77,7 @@ public class HazelcastSession extends StandardSession implements DataSerializabl
         if (sessionManager.isDeferredEnabled()) {
             dirty = true;
         } else {
-            sessionManager.getDistributedMap().set(id, this);
+            sessionManager.getMapWriteStrategy().setSession(id, this);
         }
     }
 
