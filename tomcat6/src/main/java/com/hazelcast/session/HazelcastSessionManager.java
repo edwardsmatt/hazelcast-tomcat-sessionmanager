@@ -4,9 +4,16 @@
 
 package com.hazelcast.session;
 
-import com.hazelcast.core.*;
-import org.apache.catalina.*;
+import com.hazelcast.core.EntryEvent;
+import com.hazelcast.core.EntryListener;
+import com.hazelcast.core.HazelcastInstance;
+import com.hazelcast.core.IMap;
+import com.hazelcast.core.MapEvent;
+import org.apache.catalina.Context;
+import org.apache.catalina.Lifecycle;
+import org.apache.catalina.LifecycleException;
 import org.apache.catalina.LifecycleListener;
+import org.apache.catalina.Session;
 import org.apache.catalina.util.LifecycleSupport;
 import org.apache.juli.logging.Log;
 import org.apache.juli.logging.LogFactory;
@@ -21,7 +28,8 @@ import java.util.Set;
 import static com.hazelcast.session.config.ConfigurationSupport.getOrCreateHazelcastInstance;
 import static com.hazelcast.session.config.ConfigurationSupport.resolveSessionMapName;
 
-public class HazelcastSessionManager extends AbstractHazelcastSessionManager implements Lifecycle, PropertyChangeListener, SessionManager {
+public class HazelcastSessionManager
+        extends AbstractHazelcastSessionManager implements Lifecycle, PropertyChangeListener, SessionManager {
 
     private static final String NAME = "HazelcastSessionManager";
     private static final String INFO = "HazelcastSessionManager/1.0";
@@ -105,9 +113,9 @@ public class HazelcastSessionManager extends AbstractHazelcastSessionManager imp
         final String mapName = resolveSessionMapName(getContext(), getMapName());
         sessionMap = instance.getMap(mapName);
 
-        configureReadStrategy(mapName, readStrategy);
+        configureReadStrategy(getReadStrategy());
 
-        configureWriteStrategy(mapName, writeStrategy);
+        configureWriteStrategy(mapName, getWriteStrategy());
 
         if (!isSticky()) {
             sessionMap.addEntryListener(new EntryListener<String, HazelcastSession>() {

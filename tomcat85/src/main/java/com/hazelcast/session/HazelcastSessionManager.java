@@ -4,7 +4,11 @@
 
 package com.hazelcast.session;
 
-import com.hazelcast.core.*;
+import com.hazelcast.core.EntryEvent;
+import com.hazelcast.core.EntryListener;
+import com.hazelcast.core.HazelcastInstance;
+import com.hazelcast.core.IMap;
+import com.hazelcast.core.MapEvent;
 import org.apache.catalina.Lifecycle;
 import org.apache.catalina.LifecycleException;
 import org.apache.catalina.LifecycleState;
@@ -22,7 +26,8 @@ import java.util.Set;
 import static com.hazelcast.session.config.ConfigurationSupport.getOrCreateHazelcastInstance;
 import static com.hazelcast.session.config.ConfigurationSupport.resolveSessionMapName;
 
-public class HazelcastSessionManager extends AbstractHazelcastSessionManager implements Lifecycle, PropertyChangeListener, SessionManager {
+public class HazelcastSessionManager
+        extends AbstractHazelcastSessionManager implements Lifecycle, PropertyChangeListener, SessionManager {
 
     private static final String NAME = "HazelcastSessionManager";
 
@@ -74,8 +79,8 @@ public class HazelcastSessionManager extends AbstractHazelcastSessionManager imp
         final String mapName = resolveSessionMapName(getContext(), getMapName());
         sessionMap = instance.getMap(mapName);
 
-        configureReadStrategy(mapName, readStrategy);
-        configureWriteStrategy(mapName, writeStrategy);
+        configureReadStrategy(getReadStrategy());
+        configureWriteStrategy(mapName, getWriteStrategy());
 
         if (!isSticky()) {
             sessionMap.addEntryListener(new EntryListener<String, HazelcastSession>() {
