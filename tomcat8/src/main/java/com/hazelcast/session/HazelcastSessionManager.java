@@ -248,9 +248,7 @@ public class HazelcastSessionManager extends ManagerBase implements Lifecycle, P
 
             sessions.put(id, hazelcastSession);
 
-            // call remove method to trigger eviction Listener on each node to invalidate local sessions
-            sessionMap.remove(id);
-            sessionMap.set(id, hazelcastSession);
+            sessionMap.put(id, hazelcastSession);
 
             return hazelcastSession;
         } else {
