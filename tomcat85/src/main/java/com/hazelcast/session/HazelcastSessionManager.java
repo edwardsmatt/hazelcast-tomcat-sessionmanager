@@ -184,24 +184,25 @@ public class HazelcastSessionManager
 
     @Override
     public Session findSession(String id) throws IOException {
-        log.debug("Attempting to find sessionId:" + id);
+        log.debug("Attempting to find sessionId: " + id);
+
         if (id == null) {
             return null;
         }
 
         if (!isSticky() || (isSticky() && !sessions.containsKey(id))) {
             if (isSticky()) {
-                log.info("Sticky Session is currently enabled."
-                        + "Some failover occured so reading session from Hazelcast map:" + getMapName());
+                log.debug("Sticky Session is currently enabled. "
+                        + "Some failover occurred so reading session from Hazelcast map: " + getMapName());
             }
 
             HazelcastSession hazelcastSession = getMapQueryStrategy().getSession(id);
             if (hazelcastSession == null) {
-                log.info("No Session found for:" + id);
+                log.debug("No Session found for: " + id);
                 return null;
             }
 
-            log.info("Session found for:" + id);
+            log.debug("Session found for: " + id);
 
             hazelcastSession.access();
             hazelcastSession.endAccess();
@@ -249,7 +250,9 @@ public class HazelcastSessionManager
         if (hazelcastSession.isDirty()) {
             hazelcastSession.setDirty(false);
             getMapWriteStrategy().setSession(session.getId(), hazelcastSession);
-            log.info("Thread name:" + Thread.currentThread().getName() + " committed key:" + session.getId());
+            if (log.isDebugEnabled()) {
+                log.debug("Thread name: " + Thread.currentThread().getName() + " committed key: " + session.getId());
+            }
         }
     }
 
@@ -276,7 +279,7 @@ public class HazelcastSessionManager
     @Override
     public void remove(Session session) {
         remove(session.getId());
-        log.info("Removed session: " + session.getId());
+        log.debug("Removed session: " + session.getId());
     }
 
     @Override
@@ -373,5 +376,4 @@ public class HazelcastSessionManager
     public void setDeferredWrite(boolean deferredWrite) {
         this.deferredWrite = deferredWrite;
     }
-
 }

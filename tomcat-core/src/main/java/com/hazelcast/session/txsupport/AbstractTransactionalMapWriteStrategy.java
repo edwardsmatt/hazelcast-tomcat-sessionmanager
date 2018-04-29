@@ -39,7 +39,7 @@ public abstract class AbstractTransactionalMapWriteStrategy implements MapWriteS
         hazelcastInstance.executeTransaction(transactionOptions, new TransactionalTask<Void>() {
             @Override
             public Void execute(TransactionalTaskContext context) throws TransactionException {
-                log.info(String.format("Setting session '%1$s'", sessionId));
+                log.debug(String.format("Setting session '%1$s'", sessionId));
                 TransactionalMap<String, HazelcastSession> clusteredSessionMap = context.getMap(sessionMapName);
                 clusteredSessionMap.set(sessionId, session);
                 return null;
@@ -52,7 +52,7 @@ public abstract class AbstractTransactionalMapWriteStrategy implements MapWriteS
         hazelcastInstance.executeTransaction(transactionOptions, new TransactionalTask<Void>() {
             @Override
             public Void execute(TransactionalTaskContext context) throws TransactionException {
-                log.info(String.format("Removing session '%1$s'", sessionId));
+                log.debug(String.format("Removing session '%1$s'", sessionId));
                 TransactionalMap<String, HazelcastSession> clusteredSessionMap = context.getMap(sessionMapName);
                 clusteredSessionMap.remove(sessionId);
                 return null;
@@ -69,10 +69,10 @@ public abstract class AbstractTransactionalMapWriteStrategy implements MapWriteS
 
                 TransactionalMap<String, HazelcastSession> clusteredSessionMap = context.getMap(sessionMapName);
                 if (existingSessionId != null) {
-                    log.info(String.format("Removing session '%1$s' and setting session '%2$s'", existingSessionId, sessionId));
+                    log.debug(String.format("Removing session '%1$s' and setting session '%2$s'", existingSessionId, sessionId));
                     clusteredSessionMap.remove(existingSessionId);
                 } else {
-                    log.info(String.format("Removing and replacing session '%1$s'", sessionId));
+                    log.debug(String.format("Removing and replacing session '%1$s'", sessionId));
                     clusteredSessionMap.remove(sessionId);
                 }
                 clusteredSessionMap.set(sessionId, session);
