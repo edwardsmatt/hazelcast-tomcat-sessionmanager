@@ -39,4 +39,9 @@ public interface SessionManager {
     MapQueryStrategy getMapQueryStrategy();
 
     MapWriteStrategy getMapWriteStrategy();
+
+    /**
+     * @return true if this {@link SessionManager} has sticky sessions enabled, otherwise false.
+     */
+    boolean isSticky();
 }
